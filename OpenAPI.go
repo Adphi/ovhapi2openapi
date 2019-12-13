@@ -521,11 +521,11 @@ func AddOVHAPIDefinitionToOpenAPI(definition *OVHAPIDefinition, oapi *OpenAPI, k
 	}
 
 	// Then the objects are parsed.
-	for _, model := range definition.Models {
+	for name, model := range definition.Models {
 		switch model.(type) {
 		case OVHAPITypeObject:
 			modelObject := model.(OVHAPITypeObject)
-			name := getOpenAPINameFromOVHAPI(modelObject.Namespace, modelObject.ID)
+			// name := getOpenAPINameFromOVHAPI(modelObject.Namespace, modelObject.ID)
 			object := getOpenAPIObjectFromOVHAPIObject(modelObject, name, oapi)
 
 			if object != nil {
@@ -1087,7 +1087,7 @@ func generateOpenAPIObjectFromOVHAPIObjectAndGenerics(OVHAPIObject OVHAPITypeObj
 
 		// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schemaObject:
 		// Properties marked as readOnly being true SHOULD NOT be in the required list of the defined schema.
-		if objectProperty.ReadOnly == "1" && (objectProperty.CanBeNull == "0") {
+		if objectProperty.ReadOnly != "1" {
 			schema.Required = append(schema.Required, propertyName)
 		}
 

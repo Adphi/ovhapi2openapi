@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 // OVHAPI Struct to get and parse the API definitions from the OVH API.
@@ -179,7 +180,7 @@ func (api *OVHAPI) GetDefinition(route string) (*OVHAPIDefinition, error) {
 				break
 			}
 		}
-
+		modelName = fixModelName(modelName)
 		if isEnum {
 			definition.Models[modelName] = newOVHAPITypeEnum(modelProperties)
 		} else {
@@ -189,6 +190,16 @@ func (api *OVHAPI) GetDefinition(route string) (*OVHAPIDefinition, error) {
 	definition.RawModels = nil
 
 	return &definition, err
+}
+
+func fixModelName(name string)string {
+	parts := strings.Split(name, ".")
+	if len(parts) < 2 {
+		return name
+	}
+	prefix := parts[0]
+	ns := strings.Title(strings.Join(parts[1:], "."))
+	return prefix + "." + ns
 }
 
 // newOVHAPITypeEnum Return a new OVHAPITypeEnum struct.
